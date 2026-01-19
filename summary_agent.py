@@ -1,22 +1,25 @@
 from typing import List
 from gemini_config import gemini_model
 
-async def summarize_history(history: List[dict]) -> str:
+async def summarize_history(history: List[dict], current_summary: str = None) -> str:
     """
-    Summarize the conversation history using the Gemini model.
+    Summarize the conversation history using the Gemini model, incorporating any previous summary.
     """
-    if not history:
+    if not history and not current_summary:
         return ""
     
     # Format history for summarization
     history_text = "\n".join([f"{msg.get('role', 'unknown')}: {msg.get('content', '')}" for msg in history])
     
+    summary_context = f"Previous summary: {current_summary}\n\n" if current_summary else ""
+    
     prompt = (
-        "Summarize the following conversation history between a user and a crypto expert agent "
-        "in a concise manner, focusing on the main topics and any specific coins mentioned. "
-        "Keep the summary short (under 3 sentences).\n\n"
+        "You are a conversation summarizer. Update or create a concise summary of the "
+        "conversation history between a user and a crypto expert agent.\n\n"
+        f"{summary_context}"
+        "New messages to incorporate:\n"
         f"{history_text}\n\n"
-        "Summary:"
+        "Provide a single concise summary (under 3 sentences) that covers the main topics and coins discussed."
     )
     
     try:
@@ -28,5 +31,9 @@ async def summarize_history(history: List[dict]) -> str:
         )
         return response.choices[0].message.content.strip()
     except Exception as e:
-        print(f"Error during summarization: {e}")
-        return "Previous conversation summary unavailable."
+        import traceback
+        error_msg = f"Summarization Error: {str(e)}"
+        print(error_msg)
+        traceback.print_exc()
+        # Return the error message so we can see it in the frontend/logs clearly
+        return error_msg

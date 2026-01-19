@@ -27,10 +27,12 @@ app.add_middleware(
 class ChatRequest(BaseModel):
     message: str
     history: List[dict] = []
+    summary: Optional[str] = None
 
 # Define response model
 class ChatResponse(BaseModel):
     response: str
+    summary: Optional[str] = None
 
 
 @app.post("/chat", response_model=ChatResponse)
@@ -51,17 +53,21 @@ async def chat_endpoint(request: ChatRequest):
         # Prepare the input message with history/summary
         history = request.history
         current_message = request.message
+        current_summary = request.summary
+        
+        # Determine context for the agent
+        updated_summary = current_summary # Start with existing summary
         
         if len(history) == 1:
-            # Only one message, no need for summary
+            # Only one message, no need for summary yet
             prev_msg = history[0]
             role = prev_msg.get('role', 'user')
             content = prev_msg.get('content', '')
             input_context = f"Previous conversation:\n{role}: {content}\n\nCurrent user query: {current_message}"
-        elif len(history) > 1:
-            # Generate summary for longer history
-            summary = await summarize_history(history)
-            input_context = f"Summary of previous conversation:\n{summary}\n\nCurrent user query: {current_message}"
+        elif current_summary or len(history) > 1:
+            # Generate or update summary
+            updated_summary = await summarize_history(history, current_summary)
+            input_context = f"Summary of previous conversation:\n{updated_summary}\n\nCurrent user query: {current_message}"
         else:
             # No history
             input_context = current_message
@@ -69,18 +75,22 @@ async def chat_endpoint(request: ChatRequest):
         # Run the agent
         result = await Runner.run(crypto_agent, input_context, run_config=run_config)
         
-        return ChatResponse(response=result.final_output)
+        # If we didn't generate an updated summary yet (because history == 1), 
+        # let's generate it now for the response if the history is growing
+        if len(history) == 1:
+             updated_summary = await summarize_history(history, current_summary)
+
+        return ChatResponse(response=result.final_output, summary=updated_summary)
     
     except InputGuardrailTripwireTriggered as e:
         # Guardrail was triggered - return a friendly response
-        # Extract the output_info from the guardrail result if available
         guardrail_message = "I cannot provide predictions, investment advice, or answers to hypothetical questions. I can only help with current cryptocurrency market data and information."
         
-        # Try to get the custom message from the guardrail
         if e.guardrail_result and e.guardrail_result.output and e.guardrail_result.output.output_info:
             guardrail_message = str(e.guardrail_result.output.output_info)
         
-        return ChatResponse(response=guardrail_message)
+        # Return existing summary so frontend keeps it
+        return ChatResponse(response=guardrail_message, summary=request.summary)
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
