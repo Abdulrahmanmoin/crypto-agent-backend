@@ -1,3 +1,14 @@
+---
+title: Crypto Agent Smit
+emoji: 📚
+colorFrom: red
+colorTo: green
+sdk: docker
+pinned: false
+---
+
+Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+
 # Crypto Expert Agent
 
 An AI agent built with the OpenAI Agent SDK that provides real-time cryptocurrency market data using the CoinGecko API.
