@@ -1,0 +1,30 @@
+{
+    "grass": {
+        "coin": "Grass",
+        "symbol": "GRASS",
+        "last_price": 0.294643,
+        "price_timestamp": "2026-01-19T19:19:54Z",
+        "id": "grass"
+    },
+    "ethereum": {
+        "coin": "Ethereum",
+        "symbol": "ETH",
+        "last_price": 3221.29,
+        "price_timestamp": "2026-01-19T19:20:36Z",
+        "id": "ethereum"
+    },
+    "bitcoin": {
+        "coin": "Bitcoin",
+        "symbol": "BTC",
+        "last_price": 93061,
+        "price_timestamp": "2026-01-19T19:23:17Z",
+        "id": "bitcoin"
+    },
+    "dogecoin": {
+        "coin": "Dogecoin",
+        "symbol": "DOGE",
+        "last_price": 0.129778,
+        "price_timestamp": "2026-01-19T19:55:42Z",
+        "id": "dogecoin"
+    }
+}

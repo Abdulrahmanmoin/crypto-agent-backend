@@ -1,0 +1,39 @@
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyc
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment files (secrets should be set via Docker/Hugging Face)
+.env
+.env.local
+.env.*
+
+# Test files
+test_*.py
+check_*.py
+inspect_*.py
+
+# UV lock file (we install from pyproject.toml)
+uv.lock
+
+# Misc
+*.md
+.python-version
+KB.json

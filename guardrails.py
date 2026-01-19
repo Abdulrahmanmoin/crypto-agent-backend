@@ -56,4 +56,4 @@ async def user_intent_guardrail(ctx, agent, input) -> GuardrailFunctionOutput:
         # If guardrail fails, we might choose to fail open or closed.
         # For now, let's allow it but log the error.
 
-    return GuardrailFunctionOutput(tripwire_triggered=False)
+    return GuardrailFunctionOutput(tripwire_triggered=False, output_info="Query passed safety check.")

@@ -6,7 +6,7 @@ from agents import OpenAIChatCompletionsModel
 # Load environment variables
 load_dotenv()
 
-def get_gemini_model(model_name: str = "gemini-2.5-flash"):
+def get_gemini_model(model_name: str = "gemini-2.5-flash-lite"):
     """
     Configures and returns a Gemini model instance using the OpenAI-compatible endpoint.
     """
