@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from agents import Runner, RunConfig, InputGuardrailTripwireTriggered
 from gemini_config import gemini_model
 from agent import create_crypto_agent
-from summary_agent import summarize_history
+from summary_agent import update_summary
 
 # Load environment variables
 load_dotenv()
@@ -26,7 +26,6 @@ app.add_middleware(
 # Define request model
 class ChatRequest(BaseModel):
     message: str
-    history: List[dict] = []
     summary: Optional[str] = None
 
 # Define response model
@@ -50,35 +49,21 @@ async def chat_endpoint(request: ChatRequest):
         # Instantiate the agent for this request
         crypto_agent = create_crypto_agent()
         
-        # Prepare the input message with history/summary
-        history = request.history
+        # Prepare the input message with summary
         current_message = request.message
         current_summary = request.summary
         
         # Determine context for the agent
-        updated_summary = current_summary # Start with existing summary
-        
-        if len(history) == 1:
-            # Only one message, no need for summary yet
-            prev_msg = history[0]
-            role = prev_msg.get('role', 'user')
-            content = prev_msg.get('content', '')
-            input_context = f"Previous conversation:\n{role}: {content}\n\nCurrent user query: {current_message}"
-        elif current_summary or len(history) > 1:
-            # Generate or update summary
-            updated_summary = await summarize_history(history, current_summary)
-            input_context = f"Summary of previous conversation:\n{updated_summary}\n\nCurrent user query: {current_message}"
+        if current_summary:
+            input_context = f"Summary of previous conversation:\n{current_summary}\n\nCurrent user query: {current_message}"
         else:
-            # No history
             input_context = current_message
 
         # Run the agent
         result = await Runner.run(crypto_agent, input_context, run_config=run_config)
         
-        # If we didn't generate an updated summary yet (because history == 1), 
-        # let's generate it now for the response if the history is growing
-        if len(history) == 1:
-             updated_summary = await summarize_history(history, current_summary)
+        # Generate updated summary using the new exchange
+        updated_summary = await update_summary(current_summary, current_message, result.final_output)
 
         return ChatResponse(response=result.final_output, summary=updated_summary)
     

@@ -1,39 +1,40 @@
 from typing import List
 from gemini_config import gemini_model
+from agents import Agent, Runner, ModelSettings
 
-async def summarize_history(history: List[dict], current_summary: str = None) -> str:
+# Define the Summarizer Agent
+summarizer_agent = Agent(
+    name="SummarizerAgent",
+    model=gemini_model,
+    instructions=(
+        "You are a conversation summarizer. Update or create a concise summary of the "
+        "conversation history between a user and a crypto expert agent.\n\n"
+        "Provide a single concise summary (under 3 sentences) that covers the main topics and coins discussed."
+    ),
+    model_settings=ModelSettings(tool_choice="none")
+)
+
+async def update_summary(current_summary: str, user_message: str, agent_response: str) -> str:
     """
-    Summarize the conversation history using the Gemini model, incorporating any previous summary.
+    Update the conversation summary with the latest exchange.
     """
-    if not history and not current_summary:
-        return ""
-    
-    # Format history for summarization
-    history_text = "\n".join([f"{msg.get('role', 'unknown')}: {msg.get('content', '')}" for msg in history])
     
     summary_context = f"Previous summary: {current_summary}\n\n" if current_summary else ""
     
-    prompt = (
-        "You are a conversation summarizer. Update or create a concise summary of the "
-        "conversation history between a user and a crypto expert agent.\n\n"
+    input_text = (
         f"{summary_context}"
-        "New messages to incorporate:\n"
-        f"{history_text}\n\n"
-        "Provide a single concise summary (under 3 sentences) that covers the main topics and coins discussed."
+        "New interaction to incorporate:\n"
+        f"User: {user_message}\n"
+        f"Agent: {agent_response}"
     )
     
     try:
-        # Use the same gemini_model's client to generate summary
-        response = await gemini_model.openai_client.chat.completions.create(
-            model=gemini_model.model,
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=150
-        )
-        return response.choices[0].message.content.strip()
+        # Run the summarizer agent
+        result = await Runner.run(summarizer_agent, input_text)
+        return result.final_output.strip()
     except Exception as e:
         import traceback
         error_msg = f"Summarization Error: {str(e)}"
         print(error_msg)
         traceback.print_exc()
-        # Return the error message so we can see it in the frontend/logs clearly
         return error_msg

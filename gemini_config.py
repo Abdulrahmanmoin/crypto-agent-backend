@@ -6,15 +6,16 @@ from agents import OpenAIChatCompletionsModel
 # Load environment variables
 load_dotenv()
 
-def get_gemini_model(model_name: str = "gemini-2.5-flash-lite"):
+# Static client for direct OpenAI-like calls
+gemini_client = AsyncOpenAI(
+    api_key=os.getenv("GEMINI_API_KEY"),
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+)
+
+def get_gemini_model(model_name: str = "gemini-2.5-flash"):
     """
     Configures and returns a Gemini model instance using the OpenAI-compatible endpoint.
     """
-    gemini_client = AsyncOpenAI(
-        api_key=os.getenv("GEMINI_API_KEY"),
-        base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
-    )
-
     return OpenAIChatCompletionsModel(
         model=model_name,
         openai_client=gemini_client
