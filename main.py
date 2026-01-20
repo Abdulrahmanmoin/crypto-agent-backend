@@ -7,6 +7,7 @@ from agents import Runner, RunConfig, InputGuardrailTripwireTriggered
 from gemini_config import gemini_model
 from agent import create_crypto_agent
 from summary_agent import update_summary
+import openai
 
 # Load environment variables
 load_dotenv()
@@ -77,6 +78,33 @@ async def chat_endpoint(request: ChatRequest):
         # Return existing summary so frontend keeps it
         return ChatResponse(response=guardrail_message, summary=request.summary)
     
+    except openai.RateLimitError as e:
+        # Specifically handle rate limits and extract only the 'message' part for a cleaner UI
+        error_detail = "API rate limit exceeded. Please wait a moment before trying again."
+        
+        try:
+            # OpenAI/Gemini errors often have a body with the structured error
+            if hasattr(e, "body") and isinstance(e.body, dict):
+                error_obj = e.body.get("error", {})
+                if isinstance(error_obj, dict):
+                    error_detail = error_obj.get("message", error_detail)
+            elif hasattr(e, "body") and isinstance(e.body, list) and len(e.body) > 0:
+                # Handle the specific list structure seen in some Gemini responses
+                first_item = e.body[0]
+                if isinstance(first_item, dict) and "error" in first_item:
+                    error_detail = first_item["error"].get("message", error_detail)
+            else:
+                # Fallback to the message attribute or string representation
+                raw_msg = getattr(e, "message", str(e))
+                # If it's the "Error code: 429 - [{...}]" format, try to strip the prefix
+                if " - " in raw_msg:
+                    error_detail = raw_msg.split(" - ", 1)[1]
+                else:
+                    error_detail = raw_msg
+        except Exception:
+            error_detail = str(e)
+
+        raise HTTPException(status_code=429, detail=error_detail)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

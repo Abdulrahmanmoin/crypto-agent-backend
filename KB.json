@@ -9,71 +9,71 @@
     "ethereum": {
         "coin": "Ethereum",
         "symbol": "ETH",
-        "last_price": 3106.42,
-        "price_timestamp": "2026-01-20T11:34:45Z",
+        "last_price": 3016.99,
+        "price_timestamp": "2026-01-20T17:15:08Z",
         "id": "ethereum"
     },
     "bitcoin": {
         "coin": "Bitcoin",
         "symbol": "BTC",
-        "last_price": 91282,
-        "price_timestamp": "2026-01-20T11:34:45Z",
+        "last_price": 90353,
+        "price_timestamp": "2026-01-20T17:15:08Z",
         "id": "bitcoin"
     },
     "dogecoin": {
         "coin": "Dogecoin",
         "symbol": "DOGE",
-        "last_price": 0.125561,
-        "price_timestamp": "2026-01-20T11:34:45Z",
+        "last_price": 0.124358,
+        "price_timestamp": "2026-01-20T17:15:08Z",
         "id": "dogecoin"
     },
     "tether": {
         "coin": "Tether",
         "symbol": "USDT",
-        "last_price": 0.999039,
-        "price_timestamp": "2026-01-20T11:34:45Z",
+        "last_price": 0.999144,
+        "price_timestamp": "2026-01-20T17:15:08Z",
         "id": "tether"
     },
     "binancecoin": {
         "coin": "BNB",
         "symbol": "BNB",
-        "last_price": 913.43,
-        "price_timestamp": "2026-01-20T11:34:45Z",
+        "last_price": 897.99,
+        "price_timestamp": "2026-01-20T17:15:08Z",
         "id": "binancecoin"
     },
     "ripple": {
         "coin": "XRP",
         "symbol": "XRP",
-        "last_price": 1.94,
-        "price_timestamp": "2026-01-20T11:34:45Z",
+        "last_price": 1.92,
+        "price_timestamp": "2026-01-20T17:15:08Z",
         "id": "ripple"
     },
     "usd-coin": {
         "coin": "USDC",
         "symbol": "USDC",
-        "last_price": 0.9997,
-        "price_timestamp": "2026-01-20T11:34:45Z",
+        "last_price": 0.999699,
+        "price_timestamp": "2026-01-20T17:15:08Z",
         "id": "usd-coin"
     },
     "solana": {
         "coin": "Solana",
         "symbol": "SOL",
-        "last_price": 128.82,
-        "price_timestamp": "2026-01-20T11:34:45Z",
+        "last_price": 127.41,
+        "price_timestamp": "2026-01-20T17:15:08Z",
         "id": "solana"
     },
     "tron": {
         "coin": "TRON",
         "symbol": "TRX",
-        "last_price": 0.304062,
-        "price_timestamp": "2026-01-20T11:34:45Z",
+        "last_price": 0.298465,
+        "price_timestamp": "2026-01-20T17:15:08Z",
         "id": "tron"
     },
     "staked-ether": {
         "coin": "Lido Staked Ether",
         "symbol": "STETH",
-        "last_price": 3105.69,
-        "price_timestamp": "2026-01-20T11:34:45Z",
+        "last_price": 3016.65,
+        "price_timestamp": "2026-01-20T17:15:08Z",
         "id": "staked-ether"
     }
 }
